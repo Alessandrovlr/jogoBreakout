@@ -1,6 +1,17 @@
 const canvas = document.getElementById('jogoCanvas')
 const ctx = canvas.getContext('2d')
+let gameOver = false
+let pontos= 0
 
+// function congelaTela(){
+//     document.getElementById('overlay').style.display = 'block'
+// }
+
+document.addEventListener("click", (e) =>{
+    if(gameOver){
+        location.reload()
+    }
+})
 
 class Objetos{
     #gravidade
@@ -12,22 +23,18 @@ class Objetos{
         this.#gravidade = 0.6
     }
 
-    att = function(){
-        //modificar
-    }
-
     desenha = function(ctx, cor){
         ctx.fillStyle = cor
         ctx.fillRect(this.x, this.y, this.largura, this.altura)
     }
 
-    pontuacao = function(){
-        //aa
-    }
-
     getGrav = function(){
         return this.#gravidade
     }
+
+    
+
+
 }
 
 class Raquete extends Objetos{
@@ -87,8 +94,8 @@ class Bola extends Objetos{
     constructor(x, y, raio) {
         super(x, y, raio * 2, raio * 2)
         this.#raio = raio
-        this.#velocidadex = 0
-        this.#velocidadey = 0
+        this.#velocidadex = 2
+        this.#velocidadey = 2
     }
 
     get raio() {
@@ -97,16 +104,88 @@ class Bola extends Objetos{
 
     set raio(novoRaio) {
         if (novoRaio > 0) {
-            this.#raio = novoRaio;
+            this.#raio = novoRaio
             this.largura = novoRaio * 2
             this.altura = novoRaio * 2
         }
     }
 
     desenha = function(ctx, cor){
+        ctx.beginPath()
         ctx.fillStyle = cor
         ctx.arc(this.x, this.y, this.raio, 0, Math.PI * 2)
         ctx.fill()
+        ctx.closePath()
+    }
+
+
+    mover (){
+        this.x += this.#velocidadex
+        this.y += this.#velocidadey
+    }
+
+    vColisaoParedes = function(){
+        if (this.x <= 0 || this.x + this.largura >= canvas.width) {
+            this.#velocidadex *= -1
+        }
+
+        if (this.y <= 0) {
+            this.#velocidadey *= -1
+        }
+    }
+
+    vColisaoRaquete = function(){
+        if (
+            this.y + this.altura >= personagem.y &&
+            this.x + this.largura >= personagem.x &&
+            this.x <= personagem.x + personagem.largura
+        ) {
+            this.#velocidadey *= -1
+        }
+    }
+
+    vColisaoBlocos = function(){
+        for (let i = 0; i < blocos.length; i++) {
+            let bloco = blocos[i]
+            if (
+                this.x + this.largura > bloco.x &&
+                this.x < bloco.x + bloco.largura &&
+                this.y + this.altura > bloco.y &&
+                this.y < bloco.y + bloco.altura
+            ) {
+                blocos.splice(i, 1)
+                pontos += 1
+                this.#velocidadey *= -1
+                break
+            }
+        }
+    }
+
+    vBolaCaiu = function(){
+        if (this.y >= canvas.height) {
+           this.hGameOver()
+        }
+        
+    }
+
+    hGameOver = function(){
+        this.#velocidadex = 0
+        this.#velocidadey = 0
+        ctx.fillStyle = 'red'
+        ctx.fillRect((canvas.width/2)-200, (canvas.height/2)-50, 400, 100)
+        ctx.fillStyle='black'
+        ctx.font="50px Arial"
+        ctx.fillText("Game Over", (canvas.width/2)-130, (canvas.height/2) +15)
+        gameOver = true
+        // congelaTela()
+    }
+
+    atualizar() {
+        this.vColisaoParedes()
+        this.vColisaoRaquete()
+        this.vColisaoBlocos()
+        this.vBolaCaiu()
+        
     }
 
 }
@@ -122,6 +201,8 @@ class Obstaculo extends Objetos{
         ctx.fillStyle = cor
         ctx.fillRect(this.x, this.y, this.largura, this.altura)
     }
+
+    
 }
 
 document.addEventListener('keypress', (e) =>{
@@ -161,7 +242,13 @@ function desenharBlocos(ctx) {
 }
 
 const personagem = new Raquete (50,canvas.height-40, 70, 10)
-const bolinha = new Bola(90,canvas.height -90, 7,7)
+const bolinha = new Bola(70,canvas.height -100, 7,7)
+
+desenhaPontuacao = function(){
+    ctx.fillStyle='white'
+    ctx.font="20px Arial"
+    ctx.fillText(`pontos: ${pontos}`,30,40)
+}
 
 function loop(){
     ctx.clearRect(0,0,canvas.width, canvas.height)
@@ -170,6 +257,9 @@ function loop(){
     bolinha.desenha(ctx, 'red')
     desenharBlocos(ctx, 'yellow')
     personagem.atualizar()
+    bolinha.mover()
+    bolinha.atualizar()
+    desenhaPontuacao()
     requestAnimationFrame(loop)
 }
 
