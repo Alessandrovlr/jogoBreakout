@@ -28,13 +28,13 @@ class Objetos{
         ctx.fillRect(this.x, this.y, this.largura, this.altura)
     }
 
-    getGrav = function(){
+    getGravidade = function(){
         return this.#gravidade
     }
 
-    
-
-
+    setGravidade = function(novaGravidade){
+        this.#gravidade = novaGravidade
+    }
 }
 
 class Raquete extends Objetos{
@@ -172,10 +172,10 @@ class Bola extends Objetos{
         this.#velocidadex = 0
         this.#velocidadey = 0
         ctx.fillStyle = 'red'
-        ctx.fillRect((canvas.width/2)-200, (canvas.height/2)-50, 400, 100)
+        ctx.fillRect((canvas.width/2)-180, (canvas.height/2)-40, 350, 80)
         ctx.fillStyle='black'
-        ctx.font="50px Arial"
-        ctx.fillText("Game Over", (canvas.width/2)-130, (canvas.height/2) +15)
+        ctx.font="50px Liberation"
+        ctx.fillText("Game Over", (canvas.width/2)-120, (canvas.height/2) +15)
         gameOver = true
         // congelaTela()
     }
@@ -201,8 +201,6 @@ class Obstaculo extends Objetos{
         ctx.fillStyle = cor
         ctx.fillRect(this.x, this.y, this.largura, this.altura)
     }
-
-    
 }
 
 document.addEventListener('keypress', (e) =>{
@@ -255,7 +253,7 @@ function loop(){
     
     personagem.desenha(ctx, 'white')
     bolinha.desenha(ctx, 'red')
-    desenharBlocos(ctx, 'yellow')
+    desenharBlocos(ctx)
     personagem.atualizar()
     bolinha.mover()
     bolinha.atualizar()
