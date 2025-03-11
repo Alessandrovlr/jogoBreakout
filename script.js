@@ -171,9 +171,9 @@ class Bola extends Objetos{
     hGameOver = function(){
         this.#velocidadex = 0
         this.#velocidadey = 0
-        ctx.fillStyle = 'red'
+        ctx.fillStyle = 'midnightblue'
         ctx.fillRect((canvas.width/2)-180, (canvas.height/2)-40, 350, 80)
-        ctx.fillStyle='black'
+        ctx.fillStyle='white'
         ctx.font="50px Liberation"
         ctx.fillText("Game Over", (canvas.width/2)-120, (canvas.height/2) +15)
         gameOver = true
@@ -214,6 +214,7 @@ document.addEventListener('keypress', (e) =>{
             personagem.moverDireita()
             console.log("d")
             break
+        
     }
 })
 
@@ -221,7 +222,7 @@ document.addEventListener('keypress', (e) =>{
 const blocos = []
 const largura = 75
 const altura = 20
-const linhas = 5
+const linhas = 7
 const colunas = 6
 const espacamento = 10
 const margemX = 50
@@ -236,6 +237,7 @@ for (let linha = 0; linha < linhas; linha++) {
 }
 
 function desenharBlocos(ctx) {
+    let cor
     blocos.forEach(bloco => bloco.desenha(ctx, 'yellow'))
 }
 
@@ -244,8 +246,8 @@ const bolinha = new Bola(70,canvas.height -100, 7,7)
 
 desenhaPontuacao = function(){
     ctx.fillStyle='white'
-    ctx.font="20px Arial"
-    ctx.fillText(`pontos: ${pontos}`,30,40)
+    ctx.font="20px Liberation"
+    ctx.fillText(`Pontuação: ${pontos}`,30,40)
 }
 
 function loop(){
